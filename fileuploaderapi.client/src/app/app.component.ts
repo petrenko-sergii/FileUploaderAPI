@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   }
 
   getFiles() {
-    this.http.get<File[]>('/files').subscribe(
+    this.http.get<File[]>('/api/files').subscribe(
       (result) => {
         this.files = result;
       },

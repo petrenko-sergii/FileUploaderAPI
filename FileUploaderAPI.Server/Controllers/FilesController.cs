@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileUploaderAPI.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class FilesController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
