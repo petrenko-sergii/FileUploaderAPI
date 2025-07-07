@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 
-interface WeatherForecast {
+interface File {
   date: string;
   temperatureC: number;
   temperatureF: number;
@@ -14,18 +14,18 @@ interface WeatherForecast {
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+  public files: File[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.getForecasts();
+    this.getFiles();
   }
 
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
+  getFiles() {
+    this.http.get<File[]>('/files').subscribe(
       (result) => {
-        this.forecasts = result;
+        this.files = result;
       },
       (error) => {
         console.error(error);
