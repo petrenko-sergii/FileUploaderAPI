@@ -31,7 +31,7 @@ export class AppComponent  {
 
     this.isUploading = true;
 
-    this.http.post('/api/files/upload', formData, {
+    this.http.post('/api/upload', formData, {
       reportProgress: true,
       observe: 'events'
     }).subscribe({

@@ -5,17 +5,17 @@ namespace FileUploaderAPI.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FilesController : ControllerBase
+    public class UploadController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<FilesController> _logger;
+        private readonly ILogger<UploadController> _logger;
         private readonly IBlobStorageService _blobStorageService;
 
-        public FilesController(ILogger<FilesController> logger, IBlobStorageService blobStorageService)
+        public UploadController(ILogger<UploadController> logger, IBlobStorageService blobStorageService)
         {
             _logger = logger;
             _blobStorageService = blobStorageService;
@@ -33,7 +33,7 @@ namespace FileUploaderAPI.Server.Controllers
             .ToArray();
         }
 
-        [HttpPost("upload")]
+        [HttpPost]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload(IFormFile file)
         {
