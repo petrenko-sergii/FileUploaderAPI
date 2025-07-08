@@ -59,8 +59,26 @@ namespace FileUploaderAPI.Server.Controllers
                 return BadRequest("No file was uploaded.");
             }
 
-            await _blobStorageService.UploadFileAsync(file);
-            return Ok(new { message = "File uploaded successfully." });
+            var client = _httpClientFactory.CreateClient("FileService");
+
+            using var content = new MultipartFormDataContent();
+            using var stream = file.OpenReadStream();
+            var fileContent = new StreamContent(stream);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+            content.Add(fileContent, "file", file.FileName);
+
+            var response = await client.PostAsync(string.Empty, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return Ok(responseContent);
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return StatusCode((int)response.StatusCode, error);
+            }
         }
     }
 }
