@@ -34,6 +34,7 @@ namespace FileUploaderAPI.Server.Controllers
         }
 
         [HttpPost("upload")]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file == null || file.Length == 0)

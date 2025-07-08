@@ -43,9 +43,10 @@ export class AppComponent  {
           // Optionally, handle success (e.g., show a message or refresh file list)
         }
       },
-      error: () => {
+      error: (error) => {
         this.isUploading = false;
         this.selectedFile = null;
+        console.error('File upload error:', error?.message || error);
         // Optionally, handle error (e.g., show an error message)
       }
     });
