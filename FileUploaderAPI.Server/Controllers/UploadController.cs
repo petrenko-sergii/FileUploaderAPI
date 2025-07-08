@@ -14,11 +14,16 @@ namespace FileUploaderAPI.Server.Controllers
 
         private readonly ILogger<UploadController> _logger;
         private readonly IBlobStorageService _blobStorageService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public UploadController(ILogger<UploadController> logger, IBlobStorageService blobStorageService)
+        public UploadController(
+            ILogger<UploadController> logger, 
+            IBlobStorageService blobStorageService,
+            IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _blobStorageService = blobStorageService;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
@@ -31,6 +36,18 @@ namespace FileUploaderAPI.Server.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet]
+        [Route("test")]
+        public async Task<string> ConnectToFileService()
+        {
+            var client = _httpClientFactory.CreateClient("FileService");
+
+            var response = await client.GetAsync("");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return content;
         }
 
         [HttpPost]

@@ -14,6 +14,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
+builder.Services.AddHttpClient("FileService", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["FileService:BaseUrl"]);
+});
+
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
     options.Limits.MaxRequestBodySize = null;
