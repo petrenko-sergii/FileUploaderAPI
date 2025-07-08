@@ -39,6 +39,7 @@ export class AppComponent  {
         if (event.type === HttpEventType.Response) {
           this.isUploading = false;
           this.selectedFile = null;
+          this.selectedFileName = '';
           // Optionally, handle success (e.g., show a message or refresh file list)
         }
       },

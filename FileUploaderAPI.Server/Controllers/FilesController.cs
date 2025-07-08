@@ -1,3 +1,4 @@
+using FileUploaderAPI.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileUploaderAPI.Server.Controllers
@@ -12,10 +13,12 @@ namespace FileUploaderAPI.Server.Controllers
         };
 
         private readonly ILogger<FilesController> _logger;
+        private readonly IBlobStorageService _blobStorageService;
 
-        public FilesController(ILogger<FilesController> logger)
+        public FilesController(ILogger<FilesController> logger, IBlobStorageService blobStorageService)
         {
             _logger = logger;
+            _blobStorageService = blobStorageService;
         }
 
         [HttpGet]
@@ -28,6 +31,18 @@ namespace FileUploaderAPI.Server.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            await _blobStorageService.UploadFileAsync(file);
+            return Ok(new { message = "File uploaded successfully." });
         }
     }
 }
