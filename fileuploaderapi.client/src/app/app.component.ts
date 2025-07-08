@@ -1,36 +1,51 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-
-interface File {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
-  public files: File[] = [];
+export class AppComponent  {
+  selectedFile: File | null = null;
+  isUploading = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  ngOnInit() {
-    this.getFiles();
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    } else {
+      this.selectedFile = null;
+    }
   }
 
-  getFiles() {
-    this.http.get<File[]>('/api/files').subscribe(
-      (result) => {
-        this.files = result;
+  uploadFile() {
+    if (!this.selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.isUploading = true;
+
+    this.http.post('/api/files/upload', formData, {
+      reportProgress: true,
+      observe: 'events'
+    }).subscribe({
+      next: (event: HttpEvent<any>) => {
+        if (event.type === HttpEventType.Response) {
+          this.isUploading = false;
+          this.selectedFile = null;
+          // Optionally, handle success (e.g., show a message or refresh file list)
+        }
       },
-      (error) => {
-        console.error(error);
+      error: () => {
+        this.isUploading = false;
+        this.selectedFile = null;
+        // Optionally, handle error (e.g., show an error message)
       }
-    );
+    });
   }
 
   title = 'fileuploaderapi.client';
