@@ -8,16 +8,18 @@ import { Component} from '@angular/core';
 })
 export class AppComponent  {
   selectedFile: File | null = null;
+  selectedFileName: string = '';
   isUploading = false;
 
   constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-    } else {
-      this.selectedFile = null;
+      const file = input.files[0];
+      this.selectedFile = file;
+      this.selectedFileName = file.name;
     }
   }
 
