@@ -13,5 +13,15 @@
   </mat-form-field>
   <br />
   <button mat-flat-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || isUploading">Upload file</button>
+
+  <mat-progress-bar *ngIf="isUploading"
+                    mode="determinate"
+                    [value]="uploadProgress"
+                    style="margin-top: 16px;">
+  </mat-progress-bar>
+  <div *ngIf="isUploading" style="margin-top: 8px;">
+    {{uploadedMB}} MB / {{totalMB}} MB ({{uploadProgress}}%)
+  </div>
+
   <p *ngIf="uploadedFileInfo">{{ uploadedFileInfo }}</p>
 </div>

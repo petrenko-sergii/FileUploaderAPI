@@ -11,50 +11,77 @@ export class AppComponent  {
   selectedFileName: string = '';
   isUploading = false;
   uploadedFileInfo: string = '';
+  uploadProgress = 0;
+  uploadedMB = 0;
+  totalMB = 0;
+
+  readonly CHUNK_SIZE = 100 * 1024 * 1024; // 100 MB
 
   constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event) {
-    this.uploadedFileInfo = '';
     const input = event.target as HTMLInputElement;
-
     if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.selectedFile = file;
-      this.selectedFileName = file.name;
+      this.selectedFile = input.files[0];
+      this.selectedFileName = this.selectedFile.name;
+      this.uploadProgress = 0;
+      this.uploadedMB = 0;
+      this.totalMB = +(this.selectedFile.size / (1024 * 1024)).toFixed(2);
+      this.uploadedFileInfo = '';
+    } else {
+      this.selectedFile = null;
+      this.selectedFileName = '';
+      this.uploadProgress = 0;
+      this.uploadedMB = 0;
+      this.totalMB = 0;
+      this.uploadedFileInfo = '';
     }
   }
 
-  uploadFile() {
+  async uploadFile() {
     if (!this.selectedFile) return;
 
-    const formData = new FormData();
-    formData.append('file', this.selectedFile);
-
     this.isUploading = true;
+    this.uploadProgress = 0;
+    this.uploadedMB = 0;
+    this.totalMB = +(this.selectedFile.size / (1024 * 1024)).toFixed(2);
+    this.uploadedFileInfo = '';
 
-    this.http.post('/api/upload', formData, {
-      reportProgress: true,
-      observe: 'events'
-    }).subscribe({
-      next: (event: HttpEvent<any>) => {
-        if (event.type === HttpEventType.Response) {
-          this.isUploading = false;
-          this.selectedFile = null;
-          this.selectedFileName = '';
-          this.uploadedFileInfo = event.body?.message || 'File uploaded successfully';
+    const file = this.selectedFile;
+    const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
 
-          // Optionally, handle success (e.g., show a message or refresh file list)
-        }
-      },
-      error: (error) => {
+    let uploadedBytes = 0;
+
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * this.CHUNK_SIZE;
+      const end = Math.min(start + this.CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const formData = new FormData();
+      formData.append('file', chunk, file.name);
+      formData.append('chunkIndex', chunkIndex.toString());
+      formData.append('totalChunks', totalChunks.toString());
+
+      try {
+        await this.http.post('/api/upload', formData, {
+          reportProgress: true,
+          observe: 'events'
+        }).toPromise();
+      } catch (error) {
         this.isUploading = false;
-        this.selectedFile = null;
-        this.uploadedFileInfo = '';
-        console.error('File upload error:', error?.message || error);
-        // Optionally, handle error (e.g., show an error message)
+        this.uploadedFileInfo = 'Upload failed.';
+        return;
       }
-    });
+
+      uploadedBytes = end;
+      this.uploadedMB = +(uploadedBytes / (1024 * 1024)).toFixed(2);
+      this.uploadProgress = Math.round((uploadedBytes / file.size) * 100);
+    }
+
+    this.isUploading = false;
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.uploadedFileInfo = 'File uploaded successfully.';
   }
 
   title = 'fileuploaderapi.client';

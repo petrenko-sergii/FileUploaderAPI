@@ -52,7 +52,10 @@ namespace FileUploaderAPI.Server.Controllers
 
         [HttpPost]
         [DisableRequestSizeLimit]
-        public async Task<IActionResult> Upload(IFormFile file)
+        public async Task<IActionResult> Upload(
+            IFormFile file,
+            [FromForm] int chunkIndex,
+            [FromForm] int totalChunks)
         {
             if (file == null || file.Length == 0)
             {
@@ -66,6 +69,8 @@ namespace FileUploaderAPI.Server.Controllers
             var fileContent = new StreamContent(stream);
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
             content.Add(fileContent, "file", file.FileName);
+            content.Add(new StringContent(chunkIndex.ToString()), "chunkIndex");
+            content.Add(new StringContent(totalChunks.ToString()), "totalChunks");
 
             var response = await client.PostAsync(string.Empty, content);
 
