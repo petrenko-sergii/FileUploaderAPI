@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FileService.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FileService;
 
@@ -6,6 +7,13 @@ namespace FileService;
 [ApiController]
 public class FilesController : ControllerBase
 {
+    private readonly IBlobStorageService _blobStorageService;
+
+    public FilesController(IBlobStorageService blobStorageService)
+    {
+        _blobStorageService = blobStorageService;
+    }
+
     [HttpGet]
     public async Task<string> Get()
     {
@@ -21,6 +29,7 @@ public class FilesController : ControllerBase
             return BadRequest("No file was uploaded.");
         }
 
-        return Ok(new { message = "File uploaded successfully." });
+        var fileUrl = await _blobStorageService.UploadFileAsync(file);
+        return Ok(new { message = $"File uploaded successfully: {fileUrl}" });
     }
 }
