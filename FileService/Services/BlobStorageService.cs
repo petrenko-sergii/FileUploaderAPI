@@ -29,6 +29,6 @@ public class BlobStorageService : IBlobStorageService
         await using var stream = file.OpenReadStream();
         await blobClient.UploadAsync(stream, true);
 
-        return blobClient.Uri.ToString();
+        return $"Name \"{file.FileName}\" with size {file.Length} B. URI: {blobClient.Uri.ToString()}";
     }
 }

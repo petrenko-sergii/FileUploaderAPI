@@ -10,10 +10,12 @@ export class AppComponent  {
   selectedFile: File | null = null;
   selectedFileName: string = '';
   isUploading = false;
+  uploadedFileInfo: string = '';
 
   constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event) {
+    this.uploadedFileInfo = '';
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files.length > 0) {
@@ -40,12 +42,15 @@ export class AppComponent  {
           this.isUploading = false;
           this.selectedFile = null;
           this.selectedFileName = '';
+          this.uploadedFileInfo = event.body?.message || 'File uploaded successfully';
+
           // Optionally, handle success (e.g., show a message or refresh file list)
         }
       },
       error: (error) => {
         this.isUploading = false;
         this.selectedFile = null;
+        this.uploadedFileInfo = '';
         console.error('File upload error:', error?.message || error);
         // Optionally, handle error (e.g., show an error message)
       }

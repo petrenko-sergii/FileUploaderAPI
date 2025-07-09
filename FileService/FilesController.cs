@@ -29,7 +29,7 @@ public class FilesController : ControllerBase
             return BadRequest("No file was uploaded.");
         }
 
-        var fileUrl = await _blobStorageService.UploadFileAsync(file);
-        return Ok(new { message = $"File uploaded successfully: {fileUrl}" });
+        var fileInfo = await _blobStorageService.UploadFileAsync(file);
+        return Ok(new { message = $"File uploaded successfully: {fileInfo}" });
     }
 }

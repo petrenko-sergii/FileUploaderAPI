@@ -13,4 +13,5 @@
   </mat-form-field>
   <br />
   <button mat-flat-button color="primary" (click)="uploadFile()" [disabled]="!selectedFile || isUploading">Upload file</button>
+  <p *ngIf="uploadedFileInfo">{{ uploadedFileInfo }}</p>
 </div>
