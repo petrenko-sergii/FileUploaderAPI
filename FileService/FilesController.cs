@@ -32,10 +32,8 @@ public class FilesController : ControllerBase
             return BadRequest("No file was uploaded.");
         }
 
-        string message = await _fileService.UploadChunkedFile(file, chunkIndex, totalChunks);
+        string? message = await _fileService.UploadChunkedFile(file, chunkIndex, totalChunks);
 
         return Ok(new { message });
     }
-
-    
 }

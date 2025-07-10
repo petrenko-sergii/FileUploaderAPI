@@ -2,6 +2,6 @@
 {
     public interface IFileService
     {
-        Task<string> UploadChunkedFile(IFormFile file, int chunkIndex, int totalChunks);
+        Task<string?> UploadChunkedFile(IFormFile file, int chunkIndex, int totalChunks);
     }
 }

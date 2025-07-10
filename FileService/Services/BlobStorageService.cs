@@ -1,7 +1,9 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 using FileService.Config;
 using FileService.Services.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace FileService.Services;
 
@@ -30,5 +32,35 @@ public class BlobStorageService : IBlobStorageService
         await blobClient.UploadAsync(stream, true);
 
         return $"Name \"{file.FileName}\" with size {file.Length} B. URI: {blobClient.Uri.ToString()}";
+    }
+
+    public async Task<string?> UploadFileInChunksAsync(IFormFile fileChunk, int chunkIndex, int totalChunks)
+    {
+        BlobContainerClient containerClient = new BlobContainerClient(
+            _blobStorageOptions.ConnectionString,
+            _blobStorageOptions.ContainerName);
+
+        await containerClient.CreateIfNotExistsAsync();
+
+        var blobName = fileChunk.FileName;
+        var blockBlobClient = containerClient.GetBlockBlobClient(blobName);
+
+        using (var fileStream = fileChunk.OpenReadStream())
+        {
+            var blockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(chunkIndex.ToString("d6")));
+
+            await blockBlobClient.StageBlockAsync(blockId, fileStream);
+
+            if (chunkIndex == totalChunks - 1)
+            {
+                var blockList = Enumerable.Range(0, totalChunks)
+                    .Select(i => Convert.ToBase64String(Encoding.UTF8.GetBytes(i.ToString("d6")))).ToList();
+
+                await blockBlobClient.CommitBlockListAsync(blockList);
+                return $"File \"{blobName}\" uploaded successfully";
+            }
+        }
+
+        return null;
     }
 }

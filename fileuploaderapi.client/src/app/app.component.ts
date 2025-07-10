@@ -1,4 +1,4 @@
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component} from '@angular/core';
 
 @Component({
@@ -63,10 +63,14 @@ export class AppComponent  {
       formData.append('totalChunks', totalChunks.toString());
 
       try {
-        await this.http.post('/api/upload', formData, {
+        const response: any = await this.http.post('/api/upload', formData, {
           reportProgress: true,
           observe: 'events'
         }).toPromise();
+
+        if (response && response.type === HttpEventType.Response && response.body && typeof response.body.message === 'string') {
+          this.uploadedFileInfo = response.body.message;
+        }
       } catch (error) {
         this.isUploading = false;
         this.uploadedFileInfo = 'Upload failed.';
@@ -81,7 +85,6 @@ export class AppComponent  {
     this.isUploading = false;
     this.selectedFile = null;
     this.selectedFileName = '';
-    this.uploadedFileInfo = 'File uploaded successfully.';
   }
 
   title = 'fileuploaderapi.client';
