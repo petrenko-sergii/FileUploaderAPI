@@ -1,4 +1,3 @@
-using FileUploaderAPI.Server.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileUploaderAPI.Server.Controllers
@@ -12,17 +11,11 @@ namespace FileUploaderAPI.Server.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<UploadController> _logger;
-        private readonly IBlobStorageService _blobStorageService;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public UploadController(
-            ILogger<UploadController> logger, 
-            IBlobStorageService blobStorageService,
             IHttpClientFactory httpClientFactory)
         {
-            _logger = logger;
-            _blobStorageService = blobStorageService;
             _httpClientFactory = httpClientFactory;
         }
 

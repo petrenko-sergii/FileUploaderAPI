@@ -7,11 +7,11 @@ namespace FileService;
 [ApiController]
 public class FilesController : ControllerBase
 {
-    private readonly IFileService _fileService;
+    private readonly IBlobStorageService _blobStorageService;
 
-    public FilesController(IFileService fileService)
+    public FilesController(IBlobStorageService blobStorageService)
     {
-        _fileService = fileService;
+        _blobStorageService = blobStorageService;
     }
 
     [HttpGet]
@@ -32,7 +32,7 @@ public class FilesController : ControllerBase
             return BadRequest("No file was uploaded.");
         }
 
-        string? message = await _fileService.UploadChunkedFile(file, chunkIndex, totalChunks);
+        string? message = await _blobStorageService.UploadFileInChunksAsync(file, chunkIndex, totalChunks);
 
         return Ok(new { message });
     }
