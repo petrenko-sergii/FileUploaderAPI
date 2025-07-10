@@ -69,7 +69,7 @@ export class AppComponent  {
         }).toPromise();
 
         if (response && response.type === HttpEventType.Response && response.body && typeof response.body.message === 'string') {
-          this.uploadedFileInfo = response.body.message;
+          this.uploadedFileInfo = response.body.message + ', size is ' + this.totalMB + ' MB.';
         }
       } catch (error) {
         this.isUploading = false;

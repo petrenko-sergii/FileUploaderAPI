@@ -57,6 +57,8 @@ public class BlobStorageService : IBlobStorageService
                     .Select(i => Convert.ToBase64String(Encoding.UTF8.GetBytes(i.ToString("d6")))).ToList();
 
                 await blockBlobClient.CommitBlockListAsync(blockList);
+                var blobSize = (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
+
                 return $"File \"{blobName}\" uploaded successfully";
             }
         }
