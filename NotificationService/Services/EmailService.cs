@@ -20,10 +20,9 @@ public class EmailService : IEmailService
 
         var emailMessage = new EmailMessage(
           senderAddress: _emailServiceOptions.SenderAddress,
-          content: new EmailContent("Test Email")
+          content: new EmailContent($"File \"{fileInfo}\" was uploaded")
           {
-              PlainText = "Hello world via email.",
-              Html = "<strong>File was uploaded</strong>"
+              Html = $"<strong>File \"{fileInfo}\" was uploaded.</strong>"
           },
           recipients: new EmailRecipients(
               [new EmailAddress(_emailServiceOptions.RecipientAddress)]));

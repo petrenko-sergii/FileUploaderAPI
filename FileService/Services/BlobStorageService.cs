@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs.Specialized;
 using FileService.Config;
 using FileService.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using System.Text;
 
@@ -59,10 +60,23 @@ public class BlobStorageService : IBlobStorageService
                 await blockBlobClient.CommitBlockListAsync(blockList);
                 var blobSize = (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
 
+                await NotifyFileUploadedAsync(blobName);
+
                 return $"File \"{blobName}\" uploaded successfully";
             }
         }
 
         return null;
+    }
+
+    private async Task NotifyFileUploadedAsync(string fileInfo)
+    {
+        var connection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7202/notificationHub")
+            .Build();
+
+        await connection.StartAsync();
+        await connection.InvokeAsync("NotifyFileUploaded", fileInfo);
+        await connection.StopAsync();
     }
 }

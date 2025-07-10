@@ -1,3 +1,4 @@
+using NotificationService;
 using NotificationService.Config;
 using NotificationService.Services;
 using NotificationService.Services.Interfaces;
@@ -13,6 +14,8 @@ builder.Services.AddOptions<EmailServiceOptions>()
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -22,5 +25,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
