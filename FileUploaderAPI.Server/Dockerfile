@@ -19,11 +19,11 @@ RUN npm install -g @angular/cli
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FileUploaderAPI.Server/FileUploaderAPI.Server.csproj", "FileUploaderAPI.Server/"]
-COPY ["fileuploaderapi.client/fileuploaderapi.client.esproj", "fileuploaderapi.client/"]
-RUN dotnet restore "./FileUploaderAPI.Server/FileUploaderAPI.Server.csproj"
+COPY FileUploaderAPI.Server.csproj ./
+#COPY ["fileuploaderapi.client/fileuploaderapi.client.esproj", "fileuploaderapi.client/"]
+RUN dotnet restore "./FileUploaderAPI.Server.csproj"
 COPY . .
-WORKDIR "/src/FileUploaderAPI.Server"
+WORKDIR /src
 RUN dotnet build "./FileUploaderAPI.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
