@@ -13,7 +13,7 @@ public class NotifyService : INotifyService
             .GetSection("NotificationService")["BaseUrl"] ??  string.Empty;
     }
 
-    public async Task NotifyFileUploadedAsync(string fileInfo)
+    public async Task NotifyFileUploadedAsync(FileInfo fileInfo)
     {
         var hubUrl = $"{_hubBaseUrl}/notificationHub";
 

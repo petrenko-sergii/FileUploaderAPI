@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NotificationService.Services.Interfaces;
 
 namespace NotificationService
 {
@@ -7,24 +6,10 @@ namespace NotificationService
     [ApiController]
     public class NotificationsController : ControllerBase
     {
-        private readonly IEmailService _emailService;
-
-        public NotificationsController(IEmailService emailService)
-        {
-            _emailService = emailService;
-        }
-
         [HttpGet]
         public async Task<string> Get()
         {
             return "String from \"NotificationService\"";
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SendEmail()
-        {
-            await _emailService.SendEmail("file-details");
-            return Ok("Email sent.");
         }
     }
 }

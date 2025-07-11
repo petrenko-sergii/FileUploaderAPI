@@ -12,9 +12,8 @@ public class NotificationHub : Hub
         _emailService = emailService;
     }
 
-    public async Task NotifyFileUploaded(string fileInfo)
+    public async Task NotifyFileUploaded(FileInfo fileInfo)
     {
-        _emailService.SendEmail(fileInfo);
-        await Task.CompletedTask;
+        await _emailService.SendEmail(fileInfo);
     }
 }

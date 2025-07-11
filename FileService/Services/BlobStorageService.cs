@@ -46,6 +46,8 @@ public class BlobStorageService : IBlobStorageService
 
         await containerClient.CreateIfNotExistsAsync();
 
+        await containerClient.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+
         var blobName = fileChunk.FileName;
         var blockBlobClient = containerClient.GetBlockBlobClient(blobName);
 
@@ -63,7 +65,14 @@ public class BlobStorageService : IBlobStorageService
                 await blockBlobClient.CommitBlockListAsync(blockList);
                 var blobSize = (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
 
-                await _notifyService.NotifyFileUploadedAsync(blobName);
+                var fileInfo = new FileInfo
+                {
+                    Name = blobName,
+                    Size = blobSize,
+                    Uri = blockBlobClient.Uri.ToString()
+                };
+
+                await _notifyService.NotifyFileUploadedAsync(fileInfo);
 
                 return $"File \"{blobName}\" uploaded successfully";
             }

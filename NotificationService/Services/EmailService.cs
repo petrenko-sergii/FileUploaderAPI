@@ -14,15 +14,21 @@ public class EmailService : IEmailService
     {
         _emailServiceOptions = emailServiceOptions.Value;
     }
-    public async Task SendEmail(string fileInfo)
+    public async Task SendEmail(FileInfo fileInfo)
     {
         var emailClient = new EmailClient(_emailServiceOptions.ConnectionString);
 
+        var fileSizeInMB = Math.Round(fileInfo.Size / (1024.0 * 1024.0), 2);
+
         var emailMessage = new EmailMessage(
             senderAddress: _emailServiceOptions.SenderAddress,
-            content: new EmailContent($"File \"{fileInfo}\" was uploaded")
+            content: new EmailContent($"File \"{fileInfo.Name}\" was uploaded")
             {
-                Html = $"<strong>File \"{fileInfo}\" was uploaded.</strong>"
+                Html = $"<strong>File \"{fileInfo.Name}\" was uploaded." +
+                    $"<br />" +
+                    $"Size: {fileSizeInMB} MB." +
+                    $"<br />" +
+                    $"Uri: {fileInfo.Uri}.</strong>"
             },
             recipients: new EmailRecipients(
                 [new EmailAddress(_emailServiceOptions.RecipientAddress)]));

@@ -2,6 +2,6 @@
 {
     public interface INotifyService
     {
-        Task NotifyFileUploadedAsync(string fileInfo);
+        Task NotifyFileUploadedAsync(FileInfo fileInfo);
     }
 }
