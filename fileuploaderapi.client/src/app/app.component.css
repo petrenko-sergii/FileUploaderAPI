@@ -1,4 +1,4 @@
-﻿:host {
+:host {
     max-width: 1280px;
     padding: 2rem;
     text-align: center;
@@ -11,4 +11,9 @@ th, td {
 
 table {
     margin: 0 auto;
+}
+
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-track-height: 24px;
+  --mdc-linear-progress-active-indicator-height: 24px;
 }

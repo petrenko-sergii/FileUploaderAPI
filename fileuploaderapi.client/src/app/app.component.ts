@@ -10,6 +10,7 @@ export class AppComponent  {
   selectedFile: File | null = null;
   selectedFileName: string = '';
   isUploading = false;
+  uploadSuccess: boolean | null = null;
   uploadedFileInfo: string = '';
   uploadProgress = 0;
   uploadedMB = 0;
@@ -70,10 +71,12 @@ export class AppComponent  {
 
         if (response && response.type === HttpEventType.Response && response.body && typeof response.body.message === 'string') {
           this.uploadedFileInfo = response.body.message + ', size is ' + this.totalMB + ' MB.';
+          this.uploadSuccess = true;
         }
       } catch (error) {
         this.isUploading = false;
         this.uploadedFileInfo = 'Upload failed.';
+        this.uploadSuccess = false;
         return;
       }
 

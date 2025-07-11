@@ -19,6 +19,8 @@
   <div *ngIf="isUploading" style="margin-top: 8px;">
     {{uploadedMB}} MB / {{totalMB}} MB ({{uploadProgress}}%)
   </div>
-
-  <p *ngIf="uploadedFileInfo">{{ uploadedFileInfo }}</p>
+  <p *ngIf="uploadedFileInfo"
+     [ngStyle]="{'color': uploadSuccess === true ? 'green' : (uploadSuccess === false ? 'red' : 'inherit')}">
+    {{ uploadedFileInfo }}
+  </p>
 </div>
