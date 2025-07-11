@@ -14,20 +14,20 @@ public class EmailService : IEmailService
     {
         _emailServiceOptions = emailServiceOptions.Value;
     }
-    public void SendEmail(string fileInfo)
+    public async Task SendEmail(string fileInfo)
     {
         var emailClient = new EmailClient(_emailServiceOptions.ConnectionString);
 
         var emailMessage = new EmailMessage(
-          senderAddress: _emailServiceOptions.SenderAddress,
-          content: new EmailContent($"File \"{fileInfo}\" was uploaded")
-          {
-              Html = $"<strong>File \"{fileInfo}\" was uploaded.</strong>"
-          },
-          recipients: new EmailRecipients(
-              [new EmailAddress(_emailServiceOptions.RecipientAddress)]));
+            senderAddress: _emailServiceOptions.SenderAddress,
+            content: new EmailContent($"File \"{fileInfo}\" was uploaded")
+            {
+                Html = $"<strong>File \"{fileInfo}\" was uploaded.</strong>"
+            },
+            recipients: new EmailRecipients(
+                [new EmailAddress(_emailServiceOptions.RecipientAddress)]));
 
-        EmailSendOperation emailSendOperation = emailClient.Send(
+        EmailSendOperation emailSendOperation = await emailClient.SendAsync(
             WaitUntil.Completed,
             emailMessage);
     }

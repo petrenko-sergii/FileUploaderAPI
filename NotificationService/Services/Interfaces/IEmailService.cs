@@ -2,5 +2,5 @@
 
 public interface IEmailService
 {
-    void SendEmail(string fileInfo);
+    Task SendEmail(string fileInfo);
 }

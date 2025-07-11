@@ -21,9 +21,9 @@ namespace NotificationService
         }
 
         [HttpPost]
-        public IActionResult SendEmail()
+        public async Task<IActionResult> SendEmail()
         {
-            _emailService.SendEmail("file-details");
+            await _emailService.SendEmail("file-details");
             return Ok("Email sent.");
         }
     }
