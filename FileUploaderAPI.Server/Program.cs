@@ -9,7 +9,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient("FileService", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["FileService:BaseUrl"]);
+    builder.Services.AddHttpClient("FileService", client =>
+    {
+        var baseUrl = builder.Configuration["FileService:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException("FileService:BaseUrl configuration is missing or empty.");
+        }
+        client.BaseAddress = new Uri(baseUrl);
+    });
 });
 
 builder.Services.Configure<KestrelServerOptions>(options =>
