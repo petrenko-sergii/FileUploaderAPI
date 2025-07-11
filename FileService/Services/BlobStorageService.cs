@@ -2,7 +2,6 @@
 using Azure.Storage.Blobs.Specialized;
 using FileService.Config;
 using FileService.Services.Interfaces;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using System.Text;
 
@@ -11,10 +10,14 @@ namespace FileService.Services;
 public class BlobStorageService : IBlobStorageService
 {
     private readonly BlobStorageOptions _blobStorageOptions;
+    private readonly INotifyService _notifyService;
 
-    public BlobStorageService(IOptions<BlobStorageOptions> blobStorageOptions)
+    public BlobStorageService(
+        IOptions<BlobStorageOptions> blobStorageOptions, 
+        INotifyService notifyService)
     {
         _blobStorageOptions = blobStorageOptions.Value;
+        _notifyService = notifyService;
     }
 
     public async Task<string> UploadFileAsync(IFormFile file)
@@ -60,23 +63,12 @@ public class BlobStorageService : IBlobStorageService
                 await blockBlobClient.CommitBlockListAsync(blockList);
                 var blobSize = (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
 
-                await NotifyFileUploadedAsync(blobName);
+                await _notifyService.NotifyFileUploadedAsync(blobName);
 
                 return $"File \"{blobName}\" uploaded successfully";
             }
         }
 
         return null;
-    }
-
-    private async Task NotifyFileUploadedAsync(string fileInfo)
-    {
-        var connection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7202/notificationHub")
-            .Build();
-
-        await connection.StartAsync();
-        await connection.InvokeAsync("NotifyFileUploaded", fileInfo);
-        await connection.StopAsync();
     }
 }

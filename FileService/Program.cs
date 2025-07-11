@@ -23,7 +23,8 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = long.MaxValue;
 });
 
-builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<INotifyService, NotifyService>();
 
 var app = builder.Build();
 
