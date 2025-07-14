@@ -8,3 +8,10 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+  client:
+    image: client-ui
+    build:
+      context: ./fileuploaderapi.client
+      dockerfile: ./Dockerfile
+    ports:
+      - 4000:80 
