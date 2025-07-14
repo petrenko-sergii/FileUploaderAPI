@@ -8,6 +8,15 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+  file.service:
+    image: ${DOCKER_REGISTRY-}fileservice
+    container_name: file.service
+    build:
+      context: FileService
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+      - "5003:5003"
   client:
     image: client-ui
     build:
