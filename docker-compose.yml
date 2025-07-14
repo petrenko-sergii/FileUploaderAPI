@@ -1,0 +1,10 @@
+services:
+  fileuploaderapi.server:
+    image: ${DOCKER_REGISTRY-}fileuploaderapiserver
+    container_name: fileuploaderapi.server
+    build:
+      context: .
+      dockerfile: FileUploaderAPI.Server/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
