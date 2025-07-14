@@ -1,12 +1,17 @@
-FROM node:20-alpine AS frontend
+FROM node:latest as build
 
-WORKDIR /app
+WORKDIR /usr/local/app
 
-COPY . .
+COPY ./ /usr/local/app/
+
 RUN npm install
+
 RUN npm run build
 
-FROM httpd:alpine
 
-WORKDIR /usr/local/apache2/htdocs
-COPY --from=frontend /app/dist/fileuploaderapi.client .
+
+FROM nginx:latest
+
+COPY --from=build /usr/local/app/dist/fileuploaderapi.client /usr/share/nginx/html
+
+EXPOSE 80
