@@ -8,6 +8,8 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+    environment:
+      - FileService:BaseUrl=http://file.service:5002/api/files/
   file.service:
     image: ${DOCKER_REGISTRY-}fileservice
     container_name: file.service
