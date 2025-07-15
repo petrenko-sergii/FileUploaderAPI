@@ -10,6 +10,7 @@ services:
       - "5001:5001"
     environment:
       - FileService:BaseUrl=http://file.service:5002/api/files/
+
   file.service:
     image: ${DOCKER_REGISTRY-}fileservice
     container_name: file.service
@@ -21,14 +22,16 @@ services:
       - "5003:5003"
     environment:
       - NotificationService:BaseUrl=http://notification.service:5004/
-  runtrackr-blob-storage:
+  
+  azurite-blob-storage:
     image: mcr.microsoft.com/azure-storage/azurite
-    container_name: runtrackr.blob-storage
+    container_name: azurite.blob-storage
     volumes:
       - ./.cotainers/blob_storage/data:/data
     ports:
       - "10000:10000"
     command: "azurite-blob --blobHost 0.0.0.0 -l /data"
+
   client:
     image: client-ui
     build:
@@ -36,6 +39,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 4000:80 
+
   notification.service:
     image: ${DOCKER_REGISTRY-}notificationservice
     container_name: notification.service
