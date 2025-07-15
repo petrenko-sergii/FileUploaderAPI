@@ -19,6 +19,8 @@ services:
     ports:
       - "5002:5002"
       - "5003:5003"
+    environment:
+      - NotificationService:BaseUrl=http://notification.service:5004/
   runtrackr-blob-storage:
     image: mcr.microsoft.com/azure-storage/azurite
     container_name: runtrackr.blob-storage
@@ -42,3 +44,4 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5004:5004"
+      - "5005:5005"
