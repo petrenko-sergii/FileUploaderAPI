@@ -1,4 +1,4 @@
-using FileService.Config;
+using Azure.Storage.Blobs;
 using FileService.Services;
 using FileService.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
@@ -10,9 +10,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddOptions<BlobStorageOptions>()
-    .BindConfiguration("AzureBlobStorage");
-
 builder.Services.Configure<KestrelServerOptions>(options =>
 {
     options.Limits.MaxRequestBodySize = null;
@@ -23,8 +20,11 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = long.MaxValue;
 });
 
-builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
-builder.Services.AddScoped<INotifyService, NotifyService>();
+builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+builder.Services.AddSingleton(_ => new BlobServiceClient(
+    builder.Configuration.GetConnectionString("BlobStorage")));
+
+builder.Services.AddSingleton<INotifyService, NotifyService>();
 
 var app = builder.Build();
 

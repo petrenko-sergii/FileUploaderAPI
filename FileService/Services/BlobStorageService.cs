@@ -1,30 +1,19 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
-using FileService.Config;
 using FileService.Services.Interfaces;
-using Microsoft.Extensions.Options;
 using System.Text;
 
 namespace FileService.Services;
 
-public class BlobStorageService : IBlobStorageService
+public class BlobStorageService(
+    BlobServiceClient blobServiceClient, 
+    INotifyService notifyService) : IBlobStorageService
 {
-    private readonly BlobStorageOptions _blobStorageOptions;
-    private readonly INotifyService _notifyService;
-
-    public BlobStorageService(
-        IOptions<BlobStorageOptions> blobStorageOptions, 
-        INotifyService notifyService)
-    {
-        _blobStorageOptions = blobStorageOptions.Value;
-        _notifyService = notifyService;
-    }
+    private const string ContainerName = "largefilescontainer";
 
     public async Task<string?> UploadFileInChunksAsync(IFormFile fileChunk, int chunkIndex, int totalChunks)
     {
-        BlobContainerClient containerClient = new BlobContainerClient(
-            _blobStorageOptions.ConnectionString,
-            _blobStorageOptions.ContainerName);
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
 
         await containerClient.CreateIfNotExistsAsync();
 
@@ -54,7 +43,7 @@ public class BlobStorageService : IBlobStorageService
                     Uri = blockBlobClient.Uri.ToString()
                 };
 
-                await _notifyService.NotifyFileUploadedAsync(fileInfo);
+                await notifyService.NotifyFileUploadedAsync(fileInfo);
 
                 return $"File \"{blobName}\" uploaded successfully";
             }
