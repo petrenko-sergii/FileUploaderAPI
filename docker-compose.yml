@@ -34,3 +34,11 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 4000:80 
+  notification.service:
+    image: ${DOCKER_REGISTRY-}notificationservice
+    container_name: notification.service
+    build:
+      context: NotificationService
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
