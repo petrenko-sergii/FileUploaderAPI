@@ -34,11 +34,16 @@ services:
 
   client:
     image: client-ui
+    container_name: client
     build:
       context: ./fileuploaderapi.client
       dockerfile: ./Dockerfile
     ports:
-      - 4000:80 
+      - 4000:4000 
+    expose:
+      - 4000
+    networks:
+      - client-network
 
   notification.service:
     image: ${DOCKER_REGISTRY-}notificationservice
@@ -49,3 +54,7 @@ services:
     ports:
       - "5004:5004"
       - "5005:5005"
+
+networks:
+    client-network:
+        driver: bridge

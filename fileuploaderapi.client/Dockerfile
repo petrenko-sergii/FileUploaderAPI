@@ -1,17 +1,18 @@
-FROM node:latest as build
+FROM node:20.10.0-alpine as build
 
-WORKDIR /usr/local/app
+WORKDIR /app
 
-COPY ./ /usr/local/app/
+COPY package*.json ./
 
 RUN npm install
 
+RUN npx ngcc --properties es2023 browser module main --first-only --create-ivy-entry-points
+
+COPY . .
 RUN npm run build
 
+FROM nginx:stable
 
+COPY --from=build /app/dist/fileuploaderapi.client/browser/ /usr/share/nginx/html
 
-FROM nginx:latest
-
-COPY --from=build /usr/local/app/dist/fileuploaderapi.client /usr/share/nginx/html
-
-EXPOSE 80
+EXPOSE 4000

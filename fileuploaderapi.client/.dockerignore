@@ -1,0 +1,6 @@
+**/node_modules/
+**/dist
+**/covarage
+**/LICENSE
+**/README.md
+**/.git
