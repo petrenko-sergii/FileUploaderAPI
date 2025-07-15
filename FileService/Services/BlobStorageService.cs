@@ -20,24 +20,6 @@ public class BlobStorageService : IBlobStorageService
         _notifyService = notifyService;
     }
 
-    public async Task<string> UploadFileAsync(IFormFile file)
-    {
-        BlobContainerClient containerClient = new BlobContainerClient(
-            _blobStorageOptions.ConnectionString,
-            _blobStorageOptions.ContainerName);
-
-        await containerClient.CreateIfNotExistsAsync();
-
-        await containerClient.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.None);
-
-        var blobClient = containerClient.GetBlobClient(file.FileName);
-
-        await using var stream = file.OpenReadStream();
-        await blobClient.UploadAsync(stream, true);
-
-        return $"Name \"{file.FileName}\" with size {file.Length} B. URI: {blobClient.Uri.ToString()}";
-    }
-
     public async Task<string?> UploadFileInChunksAsync(IFormFile fileChunk, int chunkIndex, int totalChunks)
     {
         BlobContainerClient containerClient = new BlobContainerClient(
