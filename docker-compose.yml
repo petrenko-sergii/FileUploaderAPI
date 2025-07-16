@@ -22,6 +22,7 @@ services:
       - "5003:5003"
     environment:
       - NotificationService:BaseUrl=http://notification.service:5004/
+      - ConnectionStrings:BlobStorage=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite-blob-storage:10000/devstoreaccount1;
   
   azurite-blob-storage:
     image: mcr.microsoft.com/azure-storage/azurite
