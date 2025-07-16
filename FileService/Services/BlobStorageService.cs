@@ -43,7 +43,7 @@ public class BlobStorageService(
                     Uri = blockBlobClient.Uri.ToString()
                 };
 
-                await notifyService.NotifyFileUploadedAsync(fileInfo);
+                //await notifyService.NotifyFileUploadedAsync(fileInfo);
 
                 return $"File \"{blobName}\" uploaded successfully";
             }
