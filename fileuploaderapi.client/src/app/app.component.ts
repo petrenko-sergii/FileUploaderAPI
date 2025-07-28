@@ -1,6 +1,8 @@
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { ProgressInfo } from './progress-info';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7024/api/uploadProgressHub', { withCredentials: false })
+      .withUrl(environment.API_BASE_URL + '/api/uploadProgressHub', { withCredentials: false })
       .withAutomaticReconnect()
       .build();
 
@@ -30,10 +32,9 @@ export class AppComponent implements OnInit, OnDestroy {
       console.error('SignalR Connection Error: ', err)
     );
 
-    this.hubConnection.on('UploadProgress', (data: any) => {
-      if (typeof data.progress === 'number') {
+    this.hubConnection.on('UploadProgress', (data: ProgressInfo) => {
         this.uploadProgress = data.progress;
-      }
+        this.uploadedMB = +(data.totalBytesRead / (1024 * 1024)).toFixed(0);
     });
   }
 

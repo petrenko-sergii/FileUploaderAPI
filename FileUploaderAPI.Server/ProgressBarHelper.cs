@@ -23,7 +23,11 @@ public class ProgressBarHelper : IProgressBarHelper
             if (totalBytes.HasValue && totalBytes.Value > 0)
             {
                 int progress = (int)((totalBytesRead * 100) / totalBytes.Value);
-                await _hubContext.Clients.All.SendAsync("UploadProgress", new { progress });
+                await _hubContext.Clients.All.SendAsync("UploadProgress", 
+                    new ProgressInfo { 
+                        Progress = progress, 
+                        TotalBytesRead = totalBytesRead
+                    });
             }
         }
     }
