@@ -14,12 +14,6 @@ public class FilesController : ControllerBase
         _blobStorageService = blobStorageService;
     }
 
-    [HttpGet]
-    public async Task<string> Get()
-    {
-        return "String from \"FileService\"";
-    }
-
     [HttpPost]
     [DisableRequestSizeLimit]
     public async Task<IActionResult> Upload()

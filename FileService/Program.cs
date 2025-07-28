@@ -3,6 +3,7 @@ using FileService.Services;
 using FileService.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,5 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+app.MapMethods("/api/heartbeat", [HttpMethod.Get.ToString()],
+    () => Results.Ok($"{Assembly.GetExecutingAssembly().GetName().Name} works"));
 
 app.Run();

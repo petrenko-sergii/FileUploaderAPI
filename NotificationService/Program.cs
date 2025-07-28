@@ -2,10 +2,10 @@ using NotificationService;
 using NotificationService.Config;
 using NotificationService.Services;
 using NotificationService.Services.Interfaces;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,7 +24,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
 app.MapHub<NotificationHub>("/notificationHub");
+
+app.MapMethods("/api/heartbeat", [HttpMethod.Get.ToString()],
+    () => Results.Ok($"{Assembly.GetExecutingAssembly().GetName().Name} works"));
 
 app.Run();

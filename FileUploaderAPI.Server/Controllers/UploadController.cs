@@ -23,17 +23,11 @@ namespace FileUploaderAPI.Server.Controllers
             _progressBarHelper = progressBarHelper;
         }
 
-        [HttpGet]
-        public string Get()
-        {
-            return "UploadController works ok";
-        }
-
         [HttpPost]
         [DisableFormValueModelBinding]
         [RequestSizeLimit(MaxFileSize)]
         [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-        public async Task ReceiveFile()
+        public async Task Upload()
         {
             var file = await _multipartContentValidator.ValidateAndExtractFileAsync(Request.ContentType, Request.Body);
 

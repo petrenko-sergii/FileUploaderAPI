@@ -5,6 +5,7 @@ using FileUploaderAPI.Server.Services;
 using FileUploaderAPI.Server.Validators;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<UploadProgressHub>("/api/uploadProgressHub").RequireCors("AllowClient");
 
+app.MapMethods("/api/heartbeat", [HttpMethod.Get.ToString()],
+    () => Results.Ok($"{Assembly.GetExecutingAssembly().GetName().Name} works"));
 
 app.MapFallbackToFile("/index.html");
 
