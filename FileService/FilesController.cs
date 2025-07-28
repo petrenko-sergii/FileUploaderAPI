@@ -22,17 +22,15 @@ public class FilesController : ControllerBase
 
     [HttpPost]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> Upload(
-        IFormFile file,
-        [FromForm] int chunkIndex,
-        [FromForm] int totalChunks)
+    public async Task<IActionResult> Upload()
     {
-        if (file == null || file.Length == 0)
+        var fileName = Request.Headers["X-File-Name"].FirstOrDefault();
+        if (string.IsNullOrEmpty(fileName))
         {
-            return BadRequest("No file was uploaded.");
+            return BadRequest("Missing X-File-Name header.");
         }
 
-        string? message = await _blobStorageService.UploadFileInChunksAsync(file, chunkIndex, totalChunks);
+        var message = await _blobStorageService.UploadStreamAsync(Request.Body, fileName);
 
         return Ok(new { message });
     }

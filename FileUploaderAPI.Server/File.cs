@@ -2,11 +2,7 @@ namespace FileUploaderAPI.Server;
 
 public class File
 {
-    public DateOnly Date { get; set; }
+    public Stream Stream { get; set; } = null!;
 
-    public int TemperatureC { get; set; }
-
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-
-    public string? Summary { get; set; }
+    public string Name { get; set; } = null!;
 }

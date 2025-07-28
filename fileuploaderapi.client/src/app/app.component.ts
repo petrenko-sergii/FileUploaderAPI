@@ -16,8 +16,6 @@ export class AppComponent  {
   uploadedMB = 0;
   totalMB = 0;
 
-  readonly CHUNK_SIZE = 100 * 1024 * 1024; // 100 MB
-
   constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event) {
@@ -48,41 +46,24 @@ export class AppComponent  {
     this.totalMB = +(this.selectedFile.size / (1024 * 1024)).toFixed(2);
     this.uploadedFileInfo = '';
 
-    const file = this.selectedFile;
-    const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
+    const formData = new FormData();
+    formData.append('file', this.selectedFile, this.selectedFile.name);
 
-    let uploadedBytes = 0;
+    try {
+      const response: any = await this.http.post('/api/upload', formData, {
+        reportProgress: true,
+        observe: 'events'
+      }).toPromise();
 
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * this.CHUNK_SIZE;
-      const end = Math.min(start + this.CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-
-      const formData = new FormData();
-      formData.append('file', chunk, file.name);
-      formData.append('chunkIndex', chunkIndex.toString());
-      formData.append('totalChunks', totalChunks.toString());
-
-      try {
-        const response: any = await this.http.post('/api/upload', formData, {
-          reportProgress: true,
-          observe: 'events'
-        }).toPromise();
-
-        if (response && response.type === HttpEventType.Response && response.body && typeof response.body.message === 'string') {
-          this.uploadedFileInfo = response.body.message + ', size is ' + this.totalMB + ' MB.';
-          this.uploadSuccess = true;
-        }
-      } catch (error) {
-        this.isUploading = false;
-        this.uploadedFileInfo = 'Upload failed.';
-        this.uploadSuccess = false;
-        return;
+      if (response && response.type === HttpEventType.Response) {
+        this.uploadedFileInfo = 'Upload complete: ' + this.selectedFile.name + ', size is ' + this.totalMB + ' MB.';
+        this.uploadSuccess = true;
       }
-
-      uploadedBytes = end;
-      this.uploadedMB = +(uploadedBytes / (1024 * 1024)).toFixed(2);
-      this.uploadProgress = Math.round((uploadedBytes / file.size) * 100);
+    } catch (error) {
+      this.isUploading = false;
+      this.uploadedFileInfo = 'Upload failed.';
+      this.uploadSuccess = false;
+      return;
     }
 
     this.isUploading = false;

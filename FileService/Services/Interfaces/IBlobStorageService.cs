@@ -2,5 +2,5 @@
 
 public interface IBlobStorageService
 {
-    Task<string?> UploadFileInChunksAsync(IFormFile fileChunk, int chunkIndex, int totalChunks);
+    Task<string> UploadStreamAsync(Stream stream, string fileName);
 }

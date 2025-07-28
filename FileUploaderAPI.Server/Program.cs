@@ -1,3 +1,4 @@
+using FileUploaderAPI.Server;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
@@ -21,6 +22,9 @@ builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = long.MaxValue;
 });
+
+builder.Services.AddScoped<IMultipartContentValidator, MultipartContentValidator>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 var app = builder.Build();
 

@@ -11,44 +11,28 @@ public class BlobStorageService(
 {
     private const string ContainerName = "largefilescontainer";
 
-    public async Task<string?> UploadFileInChunksAsync(IFormFile fileChunk, int chunkIndex, int totalChunks)
+    public async Task<string> UploadStreamAsync(Stream stream, string fileName)
     {
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
 
         await containerClient.CreateIfNotExistsAsync();
-
         await containerClient.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
-        var blobName = fileChunk.FileName;
-        var blockBlobClient = containerClient.GetBlockBlobClient(blobName);
+        var blobClient = containerClient.GetBlobClient(fileName);
 
-        using (var fileStream = fileChunk.OpenReadStream())
+        await blobClient.UploadAsync(stream, overwrite: true);
+
+        var blobSize = (await blobClient.GetPropertiesAsync()).Value.ContentLength;
+
+        var fileInfo = new FileInfo
         {
-            var blockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(chunkIndex.ToString("d6")));
+            Name = fileName,
+            Size = blobSize,
+            Uri = blobClient.Uri.ToString()
+        };
 
-            await blockBlobClient.StageBlockAsync(blockId, fileStream);
+        await notifyService.NotifyFileUploadedAsync(fileInfo);
 
-            if (chunkIndex == totalChunks - 1)
-            {
-                var blockList = Enumerable.Range(0, totalChunks)
-                    .Select(i => Convert.ToBase64String(Encoding.UTF8.GetBytes(i.ToString("d6")))).ToList();
-
-                await blockBlobClient.CommitBlockListAsync(blockList);
-                var blobSize = (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
-
-                var fileInfo = new FileInfo
-                {
-                    Name = blobName,
-                    Size = blobSize,
-                    Uri = blockBlobClient.Uri.ToString()
-                };
-
-                await notifyService.NotifyFileUploadedAsync(fileInfo);
-
-                return $"File \"{blobName}\" uploaded successfully";
-            }
-        }
-
-        return null;
+        return $"File \"{fileName}\" uploaded successfully";
     }
 }
