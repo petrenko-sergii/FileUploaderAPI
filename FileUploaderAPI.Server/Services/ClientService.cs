@@ -1,4 +1,6 @@
-﻿namespace FileUploaderAPI.Server;
+﻿using FileUploaderAPI.Server.Interfaces;
+
+namespace FileUploaderAPI.Server.Services;
 
 public class ClientService : IClientService
 {

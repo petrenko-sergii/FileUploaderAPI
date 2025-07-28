@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using FileUploaderAPI.Server.Interfaces;
+using FileUploaderAPI.Server.Models;
+using Microsoft.AspNetCore.SignalR;
 
-namespace FileUploaderAPI.Server;
+namespace FileUploaderAPI.Server.Helpers;
 
 public class ProgressBarHelper : IProgressBarHelper
 {
@@ -10,7 +12,7 @@ public class ProgressBarHelper : IProgressBarHelper
         _hubContext = hubContext;
     }
 
-    public async Task SendProgressBarData(File file, long? totalBytes)
+    public async Task SendProgressBarData(Models.File file, long? totalBytes)
     {
         long totalBytesRead = 0;
         byte[] buffer = new byte[81920];
@@ -22,7 +24,7 @@ public class ProgressBarHelper : IProgressBarHelper
 
             if (totalBytes.HasValue && totalBytes.Value > 0)
             {
-                int progress = (int)((totalBytesRead * 100) / totalBytes.Value);
+                int progress = (int)(totalBytesRead * 100 / totalBytes.Value);
                 await _hubContext.Clients.All.SendAsync("UploadProgress", 
                     new ProgressInfo { 
                         Progress = progress, 

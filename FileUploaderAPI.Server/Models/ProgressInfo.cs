@@ -1,4 +1,4 @@
-﻿namespace FileUploaderAPI.Server;
+﻿namespace FileUploaderAPI.Server.Models;
 
 public class ProgressInfo
 {

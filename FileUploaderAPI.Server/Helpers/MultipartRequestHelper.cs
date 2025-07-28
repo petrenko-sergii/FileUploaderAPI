@@ -1,4 +1,4 @@
-﻿namespace FileUploaderAPI.Server;
+﻿namespace FileUploaderAPI.Server.Helpers;
 
 public static class MultipartRequestHelper
 {

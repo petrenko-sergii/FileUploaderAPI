@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using FileUploaderAPI.Server.Helpers;
+using FileUploaderAPI.Server.Interfaces;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Http.Headers;
 
-namespace FileUploaderAPI.Server;
+namespace FileUploaderAPI.Server.Validators;
 
 public class MultipartContentValidator : IMultipartContentValidator
 {
-    public async Task<File> ValidateAndExtractFileAsync(string? contentType, Stream body)
+    public async Task<Models.File> ValidateAndExtractFileAsync(string? contentType, Stream body)
     {
         if (!MultipartRequestHelper.IsMultipartContentType(contentType))
         {
@@ -43,7 +45,7 @@ public class MultipartContentValidator : IMultipartContentValidator
             fileName = fileName.Substring(1, fileName.Length - 2);
         }
 
-        return new File
+        return new Models.File
         {
             Stream = section.Body,
             Name = fileName
