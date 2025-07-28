@@ -1,12 +1,13 @@
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { Component} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import * as signalR from '@microsoft/signalr';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent  {
+export class AppComponent implements OnInit, OnDestroy {
   selectedFile: File | null = null;
   selectedFileName: string = '';
   isUploading = false;
@@ -15,8 +16,32 @@ export class AppComponent  {
   uploadProgress = 0;
   uploadedMB = 0;
   totalMB = 0;
+  private hubConnection!: signalR.HubConnection;
 
   constructor(private http: HttpClient) { }
+
+  ngOnInit() {
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl('https://localhost:7024/api/uploadProgressHub', { withCredentials: false })
+      .withAutomaticReconnect()
+      .build();
+
+    this.hubConnection.start().catch(err =>
+      console.error('SignalR Connection Error: ', err)
+    );
+
+    this.hubConnection.on('UploadProgress', (data: any) => {
+      if (typeof data.progress === 'number') {
+        this.uploadProgress = data.progress;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.hubConnection) {
+      this.hubConnection.stop();
+    }
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;

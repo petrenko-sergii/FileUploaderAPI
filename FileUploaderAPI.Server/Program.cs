@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 builder.Services.AddHttpClient("FileService", client =>
 {
@@ -25,11 +26,24 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddScoped<IMultipartContentValidator, MultipartContentValidator>();
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IProgressBarHelper, ProgressBarHelper>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins("https://localhost:52499")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseCors("AllowClient");
 
 if (app.Environment.IsDevelopment())
 {
@@ -42,6 +56,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<UploadProgressHub>("/api/uploadProgressHub").RequireCors("AllowClient");
+
 
 app.MapFallbackToFile("/index.html");
 

@@ -10,13 +10,16 @@ namespace FileUploaderAPI.Server.Controllers
 
         private readonly IMultipartContentValidator _multipartContentValidator;
         private readonly IClientService _clientService;
+        private readonly IProgressBarHelper _progressBarHelper;
 
         public UploadController(
             IMultipartContentValidator multipartContentValidator,
-            IClientService clientService)
+            IClientService clientService,
+            IProgressBarHelper progressBarHelper)
         {
             _multipartContentValidator = multipartContentValidator;
             _clientService = clientService;
+            _progressBarHelper = progressBarHelper;
         }
 
         [HttpGet]
@@ -32,6 +35,8 @@ namespace FileUploaderAPI.Server.Controllers
         public async Task ReceiveFile()
         {
             var file = await _multipartContentValidator.ValidateAndExtractFileAsync(Request.ContentType, Request.Body);
+
+            await _progressBarHelper.SendProgressBarData(file, Request.ContentLength);
             await _clientService.ForwardFileToFileServiceAsync(file.Stream, file.Name);
         }
     }
