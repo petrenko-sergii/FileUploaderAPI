@@ -2,5 +2,5 @@
 
 public interface IMultipartContentValidator
 {
-    Task<Models.File> ValidateAndExtractFileAsync(string? contentType, Stream body);
+    Task<Models.File> ValidateAndExtractFileAsync(HttpRequest httpRequest);
 }

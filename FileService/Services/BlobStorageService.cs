@@ -1,7 +1,5 @@
 ﻿using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Specialized;
 using FileService.Services.Interfaces;
-using System.Text;
 
 namespace FileService.Services;
 
@@ -11,7 +9,7 @@ public class BlobStorageService(
 {
     private const string ContainerName = "largefilescontainer";
 
-    public async Task<string> UploadStreamAsync(Stream stream, string fileName)
+    public async Task<string> UploadStreamAsync(Stream stream, string fileName, long fileLength)
     {
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
 
@@ -22,12 +20,10 @@ public class BlobStorageService(
 
         await blobClient.UploadAsync(stream, overwrite: true);
 
-        var blobSize = (await blobClient.GetPropertiesAsync()).Value.ContentLength;
-
         var fileInfo = new FileInfo
         {
             Name = fileName,
-            Size = blobSize,
+            Size = fileLength,
             Uri = blobClient.Uri.ToString()
         };
 

@@ -12,7 +12,7 @@ public class ProgressBarHelper : IProgressBarHelper
         _hubContext = hubContext;
     }
 
-    public async Task SendProgressBarData(Models.File file, long? totalBytes)
+    public async Task SendProgressBarData(Models.File file)
     {
         long totalBytesRead = 0;
         byte[] buffer = new byte[81920];
@@ -22,9 +22,9 @@ public class ProgressBarHelper : IProgressBarHelper
         {
             totalBytesRead += bytesRead;
 
-            if (totalBytes.HasValue && totalBytes.Value > 0)
+            if (file.ContentLength > 0)
             {
-                int progress = (int)(totalBytesRead * 100 / totalBytes.Value);
+                int progress = (int)(totalBytesRead * 100 / file.ContentLength);
                 await _hubContext.Clients.All.SendAsync("UploadProgress", 
                     new ProgressInfo { 
                         Progress = progress, 

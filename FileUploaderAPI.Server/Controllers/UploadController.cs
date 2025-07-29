@@ -29,10 +29,10 @@ namespace FileUploaderAPI.Server.Controllers
         [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
         public async Task Upload()
         {
-            var file = await _multipartContentValidator.ValidateAndExtractFileAsync(Request.ContentType, Request.Body);
+            var file = await _multipartContentValidator.ValidateAndExtractFileAsync(Request);
 
-            await _progressBarHelper.SendProgressBarData(file, Request.ContentLength);
-            await _clientService.ForwardFileToFileServiceAsync(file.Stream, file.Name);
+            await _progressBarHelper.SendProgressBarData(file);
+            await _clientService.ForwardFileToFileServiceAsync(file);
         }
     }
 }

@@ -11,10 +11,11 @@ public class ClientService : IClientService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task ForwardFileToFileServiceAsync(Stream fileStream, string fileName)
+    public async Task ForwardFileToFileServiceAsync(Models.File file)
     {
-        var content = new StreamContent(fileStream);
-        content.Headers.Add("X-File-Name", fileName);
+        var content = new StreamContent(file.Stream);
+        content.Headers.Add("X-File-Name", file.Name);
+        content.Headers.Add("X-File-Length", file.ContentLength.ToString());
 
         var client = _httpClientFactory.CreateClient("FileService");
         var response = await client.PostAsync(string.Empty, content);

@@ -2,5 +2,5 @@
 
 public interface IBlobStorageService
 {
-    Task<string> UploadStreamAsync(Stream stream, string fileName);
+    Task<string> UploadStreamAsync(Stream stream, string fileName, long fileLength);
 }

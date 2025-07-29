@@ -7,15 +7,15 @@ namespace FileUploaderAPI.Server.Validators;
 
 public class MultipartContentValidator : IMultipartContentValidator
 {
-    public async Task<Models.File> ValidateAndExtractFileAsync(string? contentType, Stream body)
-    {
-        if (!MultipartRequestHelper.IsMultipartContentType(contentType))
+    public async Task<Models.File> ValidateAndExtractFileAsync(HttpRequest httpRequest) 
+    { 
+        if (!MultipartRequestHelper.IsMultipartContentType(httpRequest.ContentType))
         {
             throw new Exception("Not a multipart request");
         }
 
-        var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(contentType));
-        var reader = new MultipartReader(boundary, body);
+        var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(httpRequest.ContentType));
+        var reader = new MultipartReader(boundary, httpRequest.Body);
 
         var section = await reader.ReadNextSectionAsync();
 
@@ -40,6 +40,11 @@ public class MultipartContentValidator : IMultipartContentValidator
             throw new Exception("No filename defined.");
         }
 
+        if (httpRequest.ContentLength == null || httpRequest.ContentLength ==0)
+        {
+            throw new Exception("File's size is zero.");
+        }
+
         if (fileName.StartsWith("\"") && fileName.EndsWith("\""))
         {
             fileName = fileName.Substring(1, fileName.Length - 2);
@@ -48,7 +53,8 @@ public class MultipartContentValidator : IMultipartContentValidator
         return new Models.File
         {
             Stream = section.Body,
-            Name = fileName
+            Name = fileName,
+            ContentLength = httpRequest.ContentLength.Value
         };
     }
 }

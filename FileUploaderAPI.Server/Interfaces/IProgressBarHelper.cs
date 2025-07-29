@@ -2,5 +2,5 @@
 
 public interface IProgressBarHelper
 {
-    Task SendProgressBarData(Models.File file, long? totalBytes);
+    Task SendProgressBarData(Models.File file);
 }

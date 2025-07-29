@@ -24,7 +24,13 @@ public class FilesController : ControllerBase
             return BadRequest("Missing X-File-Name header.");
         }
 
-        var message = await _blobStorageService.UploadStreamAsync(Request.Body, fileName);
+        long.TryParse(Request.Headers["X-File-Length"].FirstOrDefault(), out long fileLength);
+        if (fileLength == 0)
+        {
+            return BadRequest("Header X-File-Length is missing or invalid.");
+        }
+
+        var message = await _blobStorageService.UploadStreamAsync(Request.Body, fileName, fileLength);
 
         return Ok(new { message });
     }

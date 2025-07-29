@@ -2,5 +2,5 @@
 
 public interface IClientService
 {
-    Task ForwardFileToFileServiceAsync(Stream fileStream, string fileName);
+    Task ForwardFileToFileServiceAsync(Models.File file);
 }
