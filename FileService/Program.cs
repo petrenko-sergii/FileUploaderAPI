@@ -21,6 +21,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = long.MaxValue;
 });
 
+builder.Services.AddScoped<IHeadersHelper, HeadersHelper>();
 builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
 builder.Services.AddSingleton(_ => new BlobServiceClient(
     builder.Configuration.GetConnectionString("BlobStorage")));

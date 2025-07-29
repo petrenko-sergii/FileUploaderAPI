@@ -8,27 +8,21 @@ namespace FileService;
 public class FilesController : ControllerBase
 {
     private readonly IBlobStorageService _blobStorageService;
+    private readonly IHeadersHelper _headersHelper;
 
-    public FilesController(IBlobStorageService blobStorageService)
+    public FilesController(
+        IBlobStorageService blobStorageService, IHeadersHelper headersHelper)
     {
         _blobStorageService = blobStorageService;
+        _headersHelper = headersHelper;
     }
 
     [HttpPost]
     [DisableRequestSizeLimit]
     public async Task<IActionResult> Upload()
     {
-        var fileName = Request.Headers["X-File-Name"].FirstOrDefault();
-        if (string.IsNullOrEmpty(fileName))
-        {
-            return BadRequest("Missing X-File-Name header.");
-        }
-
-        long.TryParse(Request.Headers["X-File-Length"].FirstOrDefault(), out long fileLength);
-        if (fileLength == 0)
-        {
-            return BadRequest("Header X-File-Length is missing or invalid.");
-        }
+        string fileName = _headersHelper.GetFileName(Request.Headers);
+        long fileLength = _headersHelper.GetFileLength(Request.Headers);
 
         var message = await _blobStorageService.UploadStreamAsync(Request.Body, fileName, fileLength);
 
